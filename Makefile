@@ -15,6 +15,7 @@ help:
 	@echo "psql - postgress interactive shell"
 	@echo "logs odoo - logs the odoo container"
 	@echo "logs db - logs the postgress container"
+	@echo "addons <addons_name> - restart addons"
 
 start:
 	$(COMPOSE) up -d
@@ -40,5 +41,9 @@ endef
 logs:
 	$(call log_target,$(word 2,$(MAKECMDGOALS)))
 
-.PHONY: start stop restart console psql logs
+
+addons estate: restart
+	$(DOCKER) exec -it $(CONTAINER_ODOO) odoo --db_host=$(CONTAINER_DB) -d $(ODOO_DB_NAME) -r $(DB_USERNAME) -w $(DB_PASSWORD) -u estate
+
+.PHONY: start stop restart console psql logs addons
 
