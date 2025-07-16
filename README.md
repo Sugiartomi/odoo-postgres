@@ -2,4 +2,5 @@
 try odoo application
 
 
-test push
+# Fix Odoo data var/lib/odoo directory permission
+$ docker exec -u root odoo chown odoo:odoo -R /var/lib/odoo

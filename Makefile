@@ -19,20 +19,27 @@ help:
 
 start:
 	$(COMPOSE) up -d
+
 stop:
 	$(COMPOSE) down
+
 restart:
 	$(COMPOSE) restart
+
 console:
 	$(DOCKER) exec -it $(CONTAINER_ODOO) odoo shell --db_host=$(CONTAINER_DB) -d $(ODOO_DB_NAME) -r $(DB_USERNAME) -w $(DB_PASSWORD)
+
 psql:
 	$(DOCKER) exec -it $(CONTAINER_DB) psql -U $(DB_USERNAME) -d $(ODOO_DB_NAME)
+
+addons estate: restart
+	$(DOCKER) exec -it $(CONTAINER_ODOO) odoo --db_host=$(CONTAINER_DB) -d $(ODOO_DB_NAME) -r $(DB_USERNAME) -w $(DB_PASSWORD) -u estate
 
 define log_target
 	@if [ "$(1)" = "odoo" ]; then \
 		$(COMPOSE) logs -f $(CONTAINER_ODOO); \
 	elif [ "$(1)" = "db" ]; then \
-		$(COMPOSE) logs -f $(CONTAINER_ODOO); \
+		$(COMPOSE) logs -f $(CONTAINER_DB); \
 	else \
 		echo "Invalid logs target."; \
 	fi
@@ -42,8 +49,7 @@ logs:
 	$(call log_target,$(word 2,$(MAKECMDGOALS)))
 
 
-addons estate: restart
-	$(DOCKER) exec -it $(CONTAINER_ODOO) odoo --db_host=$(CONTAINER_DB) -d $(ODOO_DB_NAME) -r $(DB_USERNAME) -w $(DB_PASSWORD) -u estate
+
 
 .PHONY: start stop restart console psql logs addons
 
